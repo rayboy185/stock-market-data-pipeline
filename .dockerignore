@@ -1,0 +1,19 @@
+# Virtual Environments
+venv/
+venv311/
+.venv/
+
+# Airflow & Logs
+airflow/
+logs/
+*.log
+
+# dbt Artifacts
+transform/target/
+transform/logs/
+
+# Git & Cache
+.git/
+.gitignore
+__pycache__/
+*.pyc

@@ -1,0 +1,32 @@
+# Virtual environments
+venv/
+venv311/
+.venv/
+
+# Secrets and environment files
+.env
+.env.docker
+transform/profiles.yml
+transform/profiles.docker.yml
+airflow/.env
+
+# dbt build artifacts
+transform/target/
+transform/logs/
+transform/dbt_packages/
+
+# Airflow runtime data
+airflow/logs/
+airflow/plugins/
+
+# Logs
+pipeline.log
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# OS junk
+.DS_Store
+Thumbs.db

@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: stg_stocks
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: ticker
+        tests:
+          - not_null
+      - name: close
+        tests:
+          - not_null
+
+  - name: stg_macro
+    columns:
+      - name: date
+        tests:
+          - not_null
+          - unique
