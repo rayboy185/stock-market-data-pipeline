@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ai_stocks
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install extractor dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run extraction
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: ai_stocks
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+        run: |
+          python scripts/extract_stocks_v2.py
+          python scripts/extract_macro.py
+
+      - name: Install dbt
+        run: pip install -r transform/requirements.txt
+
+      - name: Create dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << EOF
+          transform:
+            outputs:
+              dev:
+                type: postgres
+                host: localhost
+                port: 5432
+                user: postgres
+                pass: postgres
+                dbname: ai_stocks
+                schema: public
+                threads: 1
+            target: dev
+          EOF
+
+      - name: Run dbt
+        working-directory: transform
+        run: |
+          dbt deps
+          dbt run
+          dbt test
+
+      - name: Run pytest suite
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: ai_stocks
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+        run: |
+          pip install pytest pandas sqlalchemy python-dotenv
+          pytest tests/ -v
