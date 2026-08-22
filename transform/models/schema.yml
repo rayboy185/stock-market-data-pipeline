@@ -2,6 +2,11 @@ version: 2
 
 models:
   - name: stg_stocks
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - ticker
     columns:
       - name: date
         tests:
@@ -19,3 +24,33 @@ models:
         tests:
           - not_null
           - unique
+
+  - name: mart_ai_signals
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - ticker
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: ticker
+        tests:
+          - not_null
+      - name: close
+        tests:
+          - not_null
+      - name: daily_return_pct
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: -50
+              max_value: 50
+      - name: price_vs_ma7
+        tests:
+          - accepted_values:
+              values: ['above', 'below']
+      - name: volume_spike
+        tests:
+          - accepted_values:
+              values: [true, false]

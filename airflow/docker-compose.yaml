@@ -68,6 +68,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-webserver:8080/execution/'
       AIRFLOW__API_AUTH__JWT_SECRET: 'your-jwt-secret-here'
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
